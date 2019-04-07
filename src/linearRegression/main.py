@@ -37,7 +37,9 @@ def main():
 
 	X, Y = getData(X,Y, numLines)
 
-	print(X)
+	w = (np.dot(np.transpose(X), Y)) / (np.dot(np.transpose(X), X))
+
+	print(w)
 
 if __name__ == "__main__":
 	main()
