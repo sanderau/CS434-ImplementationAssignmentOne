@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 import math
+#import matplotlib.pyplot as plt
 import sys
 
 #collects data from file and will put it into a numpy matrix
@@ -85,11 +86,13 @@ def main():
 		if j == batches:
 			gradient = False
 
-	figure, axis = plt.subplots()
+        np.savetxt("q2.csv", a, delimiter=",")
 
-	ax.plot(ll_ot[0], ll_ot[1], label="Training set")
-	ax.plot(ll_ot[0], ll_ot[1], label="Testing set")
-	ax.legend(loc="lower right")
-	plt.show
+#	figure, axis = plt.subplots()
+
+#	ax.plot(ll_ot[0], ll_ot[1], label="Training set")
+#	ax.plot(ll_ot[0], ll_ot[1], label="Testing set")
+#	ax.legend(loc="lower right")
+#	plt.show
 
 main()
