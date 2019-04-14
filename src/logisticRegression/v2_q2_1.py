@@ -65,7 +65,7 @@ def main():
 	batches = 150 #number of batches
 	j = 0
 	w = np.zeros(train.shape[1]) # weight vector
-        lambda_ = [.01, .1, 1, 10, 100, 1000]
+	lambda_ = [.01, .1, 1, 10, 100, 1000]
 
 	ll_ot = [[], [], []]
 
