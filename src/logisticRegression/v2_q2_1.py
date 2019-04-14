@@ -65,6 +65,7 @@ def main():
 	batches = 150 #number of batches
 	j = 0
 	w = np.zeros(train.shape[1]) # weight vector
+        lambda_ = [.01, .1, 1, 10, 100, 1000]
 
 	ll_ot = [[], [], []]
 
@@ -76,7 +77,7 @@ def main():
 			prediction =  1 / (1 + math.exp(-np.dot(np.transpose(w), train[i])))
 			gradient_descent += ((prediction - train_ans[i]) * train[i])
 		
-		w -= (.0001*(gradient_descent + (.01*w)))
+		w -= (.0001*(gradient_descent + (lambda_[0]*w)))
 		j += 1
 
 		ll_ot[0].append(j)
@@ -86,7 +87,7 @@ def main():
 		if j == batches:
 			gradient = False
 
-	np.savetxt("q2.csv", a, delimiter=",")
+	np.savetxt("q2.csv", ll_ot, delimiter=",")
 
 #	figure, axis = plt.subplots()
 
