@@ -82,7 +82,7 @@ def main():
 				prediction =  1 / (1 + math.exp(-np.dot(np.transpose(w), train[i])))
 				gradient_descent += ((prediction - train_ans[i]) * train[i])
 			
-			w -= (.0001*(gradient_descent + (int(lambdas[l])*w)))
+			w -= (.0001*(gradient_descent + (float(lambdas[l])*w)))
 			j += 1
 
 			acc[0].append(j)
