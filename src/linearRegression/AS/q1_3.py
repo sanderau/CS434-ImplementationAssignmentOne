@@ -14,11 +14,11 @@ else:
     Y = np.matrix(Y)
     Y = Y.transpose()
 
-    dummyCol = np.ones((433,1)) #dummy variable column
-    dummyX = np.append(dummyCol, X, axis = 1) #matrix with dummy column
+    # dummyCol = np.ones((433,1)) #dummy variable column
+    # dummyX = np.append(dummyCol, X, axis = 1) #matrix with dummy column
 
-    XT = dummyX.transpose()
-    XTX = XT.dot(dummyX)
+    XT = X.transpose()
+    XTX = XT.dot(X)
     XTXinv = inv(XTX)
     W = XTXinv.dot(XT.dot(Y))
 
@@ -30,13 +30,13 @@ else:
 
 
     # testing data
-    Xtestraw = np.loadtxt(sys.argv[2], usecols=range(0,13)) #features
+    Xtest = np.loadtxt(sys.argv[2], usecols=range(0,13)) #features
     Ytest = np.loadtxt(sys.argv[2], usecols=range(13,14)) #desired outputs
     Ytest = np.matrix(Ytest)
     Ytest = Ytest.transpose()
 
-    dummyCol = np.ones((74,1)) #dummy variable column
-    Xtest = np.append(dummyCol, Xtestraw, axis = 1) #matrix with dummy column
+    # dummyCol = np.ones((74,1)) #dummy variable column
+    # Xtest = np.append(dummyCol, Xtest, axis = 1) #matrix with dummy column
 
     XTtest = Xtest.transpose()
     XTXtest = XTtest.dot(Xtest)
