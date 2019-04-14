@@ -1,8 +1,6 @@
 import sys
 import numpy as np
-import pandas as pd
 from numpy.linalg import inv
-from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 
 if(len(sys.argv) < 3):
