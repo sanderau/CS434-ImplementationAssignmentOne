@@ -1,1 +1,8 @@
-Here is the code for assignment one written in python3
+pip install numpy
+pip install matplotlib
+
+
+execute each q.py as specified in hw instructions
+
+
+Team: Manuel Lara-Navarro, Austin Sanders 
