@@ -86,7 +86,7 @@ def main():
 		if j == batches:
 			gradient = False
 
-        np.savetxt("q2.csv", a, delimiter=",")
+	np.savetxt("q2.csv", a, delimiter=",")
 
 #	figure, axis = plt.subplots()
 
