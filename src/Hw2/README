@@ -1,3 +1,7 @@
+pip install --upgrade sklearn
+
+numpy and other libraries seem to be already installed on server
+
 q1: python3 q1.py knn_train.csv knn_test.csv
 
 q2: python3 q2_1.py knn_train.csv knn_test.csv

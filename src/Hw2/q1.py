@@ -1,8 +1,8 @@
 import csv
 import sys
-import pandas as pd
+
 import numpy as np
-import matplotlib.pyplot as plt
+
 from numpy import arange, array, ones, linalg, zeros
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
@@ -114,12 +114,12 @@ else:
         testE.append(accuracy)
 
     ########################## PLOT ###############################
-    plt.plot(oddK, trainE)
-    plt.plot(oddK, cvE)
-    plt.plot(oddK, testE)
+    #plt.plot(oddK, trainE)
+    #plt.plot(oddK, cvE)
+    #plt.plot(oddK, testE)
 
-    plt.xlabel('K values')
-    plt.ylabel('Percent Error')
-    plt.title('Percent Error vs K')
-    plt.legend(['Train Error', 'cv Error', 'Test Error'], loc='lower right')
-    plt.show()
+    #plt.xlabel('K values')
+    #plt.ylabel('Percent Error')
+    #plt.title('Percent Error vs K')
+    #plt.legend(['Train Error', 'cv Error', 'Test Error'], loc='lower right')
+    #plt.show()
