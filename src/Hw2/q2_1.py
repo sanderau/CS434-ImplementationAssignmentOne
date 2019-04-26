@@ -1,19 +1,15 @@
 import csv
 import sys
 import math
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import arange, array, ones, linalg, zeros
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import normalize
 from collections import Counter
 
 def hS(mtrx):
     if(mtrx.size != 0 ):
-        pos = np.count_nonzero( mtrx[ :, 30] == 1)
-        neg = np.count_nonzero( mtrx[ :, 30] == -1)
+        pos = np.count_nonzero( mtrx[ :, -1] == 1)
+        neg = np.count_nonzero( mtrx[ :, -1] == -1)
         if(pos == 0 or neg == 0):
             return 0
         h = (-pos/(pos+neg)) * (math.log( pos/(pos+neg), 2))-(neg/(pos+neg))*(math.log(neg/(pos+neg),2))
@@ -143,13 +139,3 @@ else:
 
     print("\n\nTraining Error %: ", trainE)
     testE(Test, feat, thres, lt, rt)
-    ########################## PLOT ###############################
-    # plt.plot(oddK, trainE)
-    # plt.plot(oddK, cvE)
-    # plt.plot(oddK, testE)
-    #
-    # plt.xlabel('K values')
-    # plt.ylabel('Percent Error')
-    # plt.title('Percent Error vs K')
-    # plt.legend(['Train Error', 'cv Error', 'Test Error'], loc='lower right')
-    # plt.show()

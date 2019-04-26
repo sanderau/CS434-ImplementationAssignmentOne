@@ -1,14 +1,13 @@
 import csv
 import sys
 import math
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import arange, array, ones, linalg, zeros
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import normalize
 from collections import Counter
+
+varG = 0
+tE = 0
 
 def hS(mtrx):
     if(mtrx.size != 0 ):
@@ -58,51 +57,90 @@ def iGain(mtrx, feature):
     return bestGain, bestThres
 
 
-def testE(mtrxTEST, feat, thres, ltLBL, rtLBL):
+def testE(mtrxTEST, feat, thres, d, ltLBL, rtLBL):
     s1, s2 = [], []
+    ltStat, rtStat = 0, 0
+    ltError, ltError = 0, 0
 
     for j in range(len(mtrxTEST)):
         if(mtrxTEST[j][feat] >= thres): # True
             s1.append(mtrxTEST[j])
-
         else:                       # False
             s2.append(mtrxTEST[j])
 
-    pos1 = np.count_nonzero( np.array(s1)[:, -1] == ltLBL)
-    pos2 = np.count_nonzero( np.array(s2)[:, -1] == rtLBL)
+    pos = np.count_nonzero( np.array(s1)[:, -1] == ltLBL)
+    neg = np.count_nonzero( np.array(s1)[:, -1] == rtLBL)
 
-    print( "Testing Error %: ", (1 - ((pos1+pos2)/284))*100 )
+    if (pos == 0 or neg == 0):
+        ltStat = 1
+    ltError = neg
+
+    pos2 = np.count_nonzero( np.array(s2)[:, -1] == ltLBL)
+    neg2 = np.count_nonzero( np.array(s2)[:, -1] == rtLBL)
+
+    if (pos2 == 0 or neg2 == 0):
+        rtStat = 1
+    rtError = pos2
+
+    for i in range(d):
+        print(' | ', end='')
+    print(" label", ltLBL, " >= ", thres, "\t\t\t\t[ ", pos, ", ", neg, "\t]")
+    for i in range(d):
+        print(' | ', end='')
+    print(" label", rtLBL, " < ", thres, "\t\t\t\t[ ", pos2, ", ", neg2, "\t]")
+
+    return s1, ltStat, s2, rtStat, ltError,  rtError
 
 
-def trainE(mtrx, feat, thres):
+def trainE(mtrx, feat, thres, d):
     s1, s2 = [], []
+    ltStat, rtStat = 0, 0
+    ltError, ltError = 0, 0
 
     for j in range(len(mtrx)):
         if(mtrx[j][feat] >= thres): # True
             s1.append(mtrx[j])
-
         else:                       # False
             s2.append(mtrx[j])
 
-    maj1 = Counter(np.array(s1)[:, -1]).most_common(1)[0][0]
-    # print()
-    if(maj1 == 1):
-        maj2 = -1
-    else:
-        maj2 = 1
+    majLeft = Counter(np.array(s1)[:, -1]).most_common(1)[0][0]
+    majRight = Counter(np.array(s2)[:, -1]).most_common(1)[0][0]
+    # both sides have the same label, give it to side that has more correct
+    if(majLeft == majRight):
+        lt = Counter(np.array(s1)[:, -1]).most_common(1)[0][1]
+        rt = Counter(np.array(s2)[:, -1]).most_common(1)[0][1]
+        if lt >= rt:
+            majRight = majRight * -1
+        else:
+            majLeft = majLeft * -1
 
-    pos1 = np.count_nonzero( np.array(s1)[:, -1] == maj1)
-    pos2 = np.count_nonzero( np.array(s2)[:, -1] == maj2)
+    pos = np.count_nonzero( np.array(s1)[:, -1] == majLeft)
+    neg = np.count_nonzero( np.array(s1)[:, -1] == majRight)
 
-    # tE = (1 - ((pos1+pos2)/284))*100
+    if (pos == 0 or neg == 0):
+        ltStat = 1
+    ltError = neg
 
-    return maj1, maj2, s1, s2
+    pos2 = np.count_nonzero( np.array(s2)[:, -1] == majLeft)
+    neg2 = np.count_nonzero( np.array(s2)[:, -1] == majRight)
+
+    if (pos2 == 0 or neg2 == 0):
+        rtStat = 1
+    rtError = pos2
+
+    return s1, ltStat, s2, rtStat, ltError, rtError, majLeft, majRight
 
 
-def dTree(xTrain):
-    gain = 0
-    thres = 0
-    feat = None
+def dTree(xTrain, d, max, E, Test, errorT):
+    gain, thres, feat = 0, 0, None
+
+    global varG
+    global tE
+
+    if(d >= max):
+        varG += E/284
+        tE += errorT/284
+        return
 
     for j in range(len(xTrain[0,:]) - 1):
         g, t = iGain(xTrain, j)
@@ -110,12 +148,21 @@ def dTree(xTrain):
             gain = g
             thres = t
             feat = j
-    ltLBL, rtLBL, s1, s2 = trainE(xTrain, feat, thres)
+    s1, s1Stat, s2, s2Stat, ltE, rtE, ltLBL, rtLBL = trainE(xTrain, feat, thres, d)
+    s1Test, s1Tstat, s2Test, s2Tstat, ltEtest,  rtEtest = testE(Test, feat, thres, d, ltLBL, rtLBL)
 
-    return feat, thres, ltLBL, rtLBL, s1, s2
+    if(s1Stat != 1 and s1Tstat != 1):
+        dTree(np.array(s1), d+1, max, ltE, np.array(s1Test), ltEtest)
+    else:
+        tE += ltEtest/284
+    if(s2Stat != 1 and s2Tstat != 1):
+        dTree(np.array(s2), d+1, max, rtE, np.array(s2Test), rtEtest)
+    else:
+        tE += rtEtest/284
+    return
 
 ########################## MAIN ###############################
-if(len(sys.argv) < 3):
+if(len(sys.argv) < 4):
     print("Must include filenames as arguments")
 else:
     # trainDATA
@@ -134,19 +181,29 @@ else:
         X.append(row[1:31] + row[0:1])
     Test = array(X).astype(np.float64)
     ########################## TEST ###############################
-    feat, thres, ltLBL, rtLBL, lt, rt = dTree(Train)
-    pos = np.count_nonzero( np.array(lt)[:, -1] == ltLBL)
-    neg = np.count_nonzero( np.array(lt)[:, -1] == rtLBL)
+    trainError = []
+    testError = []
 
-    pos2 = np.count_nonzero( np.array(rt)[:, -1] == ltLBL)
-    neg2 = np.count_nonzero( np.array(rt)[:, -1] == rtLBL)
+    for i in range(int(sys.argv[3])):
+        dTree(Train, 1, i+2, 0, Test, 0)
+        print("Training Error %: ", varG * 100)
+        trainError.append(varG * 100)
+        print("Testing Error %: ", tE * 100)
+        testError.append(tE * 100)
 
-    print("Decision Stump: ")
-    print("Feature ", feat, " split")
-    print("| Label ", ltLBL, " < ", thres, "[ ", pos, ", ", neg, " ]")
-    print("| Label ", rtLBL, " >= ", thres, "[ ", pos2, ", ", neg2, " ]")
+        varG = 0
+        tE = 0
 
-    print("\n\nSplitting on feature ", feat)
-    print("At threshold value ", thres)
+    print("\n\n")
+    print("Train Error %: ", trainError)
+    print("Test Error %: ", testError)
+    ########################## PLOT ###############################
+    plt.plot([1,2,3,4,5], trainError)
+    # plt.plot(oddK, cvE)
+    plt.plot([1,2,3,4,5], testError)
 
-    
+    plt.xlabel('d value')
+    plt.ylabel('Percent Error')
+    plt.title('Percent Error vs Depth')
+    plt.legend(['Train Error', 'Test Error'], loc='upper right')
+    plt.show()
